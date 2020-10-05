@@ -55,6 +55,16 @@ app.post("/post", (req, res) => {
     });
 });
 
+const isEmail = (email) => {
+  const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (email.match(regEx)) return true;
+  else return false;
+};
+const isEmpty = (string) => {
+  if (string.trim() === "") return true;
+  else return false;
+};
+
 app.post("/signup", (req, res) => {
   const newUser = {
     email: req.body.email,
@@ -62,6 +72,15 @@ app.post("/signup", (req, res) => {
     confirmPassword: req.body.confirmPassword,
     handle: req.body.handle,
   };
+
+  let errors = {};
+
+  if (isEmpty(newUser.email)) {
+    errors.email = "Email must not be empty";
+  } else if (!isEmail(newUser.email)) {
+    errors.email = "Must be a valid email address";
+  }
+
   let token, userId;
   db.doc(`/users/${newUser.handle}`)
     .get()
@@ -75,30 +94,30 @@ app.post("/signup", (req, res) => {
       }
     })
     .then((data) => {
-        userId = data.user.uid;
+      userId = data.user.uid;
       return data.user.getIdToken();
     })
-    .then((token) => {
-        token = token; 
-        const useerCredentials = {
-            handle:newUser.handle,
-            email: newUser.email,
-            createdAt: new Date().toISOString(),
-            userId
-        }
+    .then((idToken) => {
+      token = idToken;
+      const useerCredentials = {
+        handle: newUser.handle,
+        email: newUser.email,
+        createdAt: new Date().toISOString(),
+        userId,
+      };
       return db.doc(`/users/${newUser.handle}`).set(useerCredentials);
     })
     .then(() => {
-        return res.status(200).json({token});
+      return res.status(200).json({ token });
     })
-    .catch(err => {
-        console.error(err);
-        if(err.code === 'auth/email-already-in-use'){
-            return res.status(400).jjson({email: 'email is already in use'})
-        }else{
-            return res.status(500).json({error: err.code})
-        }
-    })
+    .catch((err) => {
+      console.error(err);
+      if (err.code === "auth/email-already-in-use") {
+        return res.status(400).jjson({ email: "email is already in use" });
+      } else {
+        return res.status(500).json({ error: err.code });
+      }
+    });
 });
 
 exports.api = functions.region("asia-south1").https.onRequest(app);
