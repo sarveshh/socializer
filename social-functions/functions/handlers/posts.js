@@ -1,5 +1,5 @@
 const db = require("../util/admin");
-const config = require('../util/config')
+const config = require("../util/config");
 
 exports.getAllPosts = (req, res) => {
   db.collection("posts")
