@@ -1,7 +1,12 @@
 const functions = require("firebase-functions");
 const app = require("express")();
 const { getAllPosts, postOnePost } = require("../functions/handlers/posts");
-const { signup, login, uploadImage, addUserDetails } = require("./handlers/users");
+const {
+  signup,
+  login,
+  uploadImage,
+  addUserDetails,
+} = require("./handlers/users");
 const FBAuth = require("./util/fbAuth");
 
 app.get("/posts", getAllPosts);
@@ -9,6 +14,6 @@ app.post("/post", FBAuth, postOnePost);
 app.post("/signup", signup);
 app.post("/login", login);
 app.post("/user/image", FBAuth, uploadImage);
-app.post('/user', FBAuth, addUserDetails)
+app.post("/user", FBAuth, addUserDetails);
 
 exports.api = functions.region("asia-south1").https.onRequest(app);
