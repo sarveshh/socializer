@@ -42,7 +42,7 @@ exports.signup = (req, res) => {
         imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
         userId,
       };
-      return db.doc(`/users/${newUser.handle}`).set(useerCredentials);
+      return db.doc(`/users/${newUser.handle}`).set(userCredentials);
     })
     .then(() => {
       return res.status(200).json({ token });
@@ -50,7 +50,7 @@ exports.signup = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.code === "auth/email-already-in-use") {
-        return res.status(400).jjson({ email: "email is already in use" });
+        return res.status(400).json({ email: "email is already in use" });
       } else {
         return res.status(500).json({ error: err.code });
       }
@@ -122,4 +122,5 @@ exports.uploadImage = (req, res) => {
         return res.status(500).json({ error: err.code });
       });
   });
+  busboy.end(req.rawBody);
 };
