@@ -8,6 +8,6 @@ app.get("/posts", getAllPosts);
 app.post("/post", FBAuth, postOnePost);
 app.post("/signup", signup);
 app.post("/login", login);
-app.post("/user/image", uploadImage);
+app.post("/user/image", FBAuth, uploadImage);
 
 exports.api = functions.region("asia-south1").https.onRequest(app);
