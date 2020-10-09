@@ -27,12 +27,17 @@ exports.postOnePost = (req, res) => {
   const newPost = {
     body: req.body.body,
     userHandle: req.user.handle,
+    usrrImage: req.user.imageUrl,
     admincreatedAt: new Date().toISOString(),
+    likeCount : 0,
+    commentCount : 0
   };
   db.collection("posts")
     .add(newPost)
     .then((doc) => {
-      res.json({ message: `document ${doc.id} created successfully` });
+      const resPost = newPost;
+      resPost.postId = doc.id;
+      res.json(resPost);
     })
     .catch((err) => {
       res.status(500).json({ error: "Something went wrong" });
@@ -95,4 +100,8 @@ exports.commentOnPost = (req, res) => {
     console.log(err);
     res.status(500).json({error : 'Something went wrong'})
   })
+}
+
+exports.likePost = (req, res) => {
+  
 }

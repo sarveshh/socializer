@@ -6,6 +6,8 @@ const {
   postOnePost,
   getPost,
   commentOnPost,
+  likePost,
+  unlikePost
 } = require("../functions/handlers/posts");
 
 const {
@@ -26,5 +28,7 @@ app.post("/user", FBAuth, addUserDetails);
 app.get("/user", FBAuth, getAuthenticatedUser);
 app.get("/post/:postId", getPost);
 app.post("/post/:postId/comment", FBAuth, commentOnPost);
+app.get('/post/:postId/like', FBAuth, likePost);
+app.get('/post/:postId/unlike', FBAuth, unlikePost);
 
 exports.api = functions.region("asia-south1").https.onRequest(app);
