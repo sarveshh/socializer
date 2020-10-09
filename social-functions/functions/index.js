@@ -7,7 +7,8 @@ const {
   getPost,
   commentOnPost,
   likePost,
-  unlikePost
+  unlikePost,
+  deletePost,
 } = require("../functions/handlers/posts");
 
 const {
@@ -28,7 +29,8 @@ app.post("/user", FBAuth, addUserDetails);
 app.get("/user", FBAuth, getAuthenticatedUser);
 app.get("/post/:postId", getPost);
 app.post("/post/:postId/comment", FBAuth, commentOnPost);
-app.get('/post/:postId/like', FBAuth, likePost);
-app.get('/post/:postId/unlike', FBAuth, unlikePost);
+app.get("/post/:postId/like", FBAuth, likePost);
+app.get("/post/:postId/unlike", FBAuth, unlikePost);
+app.delete("/post/:postId", FBAuth, deletePost);
 
 exports.api = functions.region("asia-south1").https.onRequest(app);
