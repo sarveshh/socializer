@@ -7,6 +7,7 @@ const {
   validateLoginData,
   reduceUserDetails,
 } = require("../util/validators");
+const { resolveSoa } = require("dns");
 
 exports.signup = (req, res) => {
   const newUser = {
@@ -100,6 +101,33 @@ exports.addUserDetails = (req, res) => {
       console.error(err);
       return res.status(500).json({ error: err.code });
     });
+};
+
+exports.getAuthenticatedUser = (req, res) => {
+  let userData = {};
+
+  db.doc(`/users/${req.user.handle}`)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        userData.credentials = doc.data();
+        return db
+          .collection("likes")
+          .where("userHandle", "==", req.user.handle)
+          .get();
+      }
+    })
+    .then(data => {
+      userData.likes = [];
+      data.forEach(doc => {
+        userData.likes.push(doc.data());
+      });
+      return res.json(userData)
+    })
+    .catch(err => {
+      console.error(err);
+      return res.status(500).json({error : err.code})
+    })
 };
 
 exports.uploadImage = (req, res) => {
