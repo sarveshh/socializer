@@ -1,6 +1,6 @@
 const functions = require("firebase-functions");
 const app = require("express")();
-const db = require("../util/admin");
+const db = require("./util/admin");
 
 const {
   getAllPosts,
@@ -10,7 +10,7 @@ const {
   likePost,
   unlikePost,
   deletePost,
-} = require("../functions/handlers/posts");
+} = require("./handlers/posts");
 
 const {
   signup,
@@ -37,8 +37,8 @@ app.delete("/post/:postId", FBAuth, deletePost);
 exports.api = functions.region("asia-south1").https.onRequest(app);
 
 exports.createNotificationOnLike = functions
-  .region('asia-south1')
-  .firestore.document('likes/{id}')
+  .region("asia-south1")
+  .firestore.document("likes/{id}")
   .onCreate((snapshot) => {
     return db
       .doc(`/screams/${snapshot.data().screamId}`)
@@ -52,17 +52,17 @@ exports.createNotificationOnLike = functions
             createdAt: new Date().toISOString(),
             recipient: doc.data().userHandle,
             sender: snapshot.data().userHandle,
-            type: 'like',
+            type: "like",
             read: false,
-            screamId: doc.id
+            screamId: doc.id,
           });
         }
       })
       .catch((err) => console.error(err));
   });
 exports.deleteNotificationOnUnLike = functions
-  .region('asia-south1')
-  .firestore.document('likes/{id}')
+  .region("asia-south1")
+  .firestore.document("likes/{id}")
   .onDelete((snapshot) => {
     return db
       .doc(`/notifications/${snapshot.id}`)
@@ -73,8 +73,8 @@ exports.deleteNotificationOnUnLike = functions
       });
   });
 exports.createNotificationOnComment = functions
-  .region('asia-south1')
-  .firestore.document('comments/{id}')
+  .region("asia-south1")
+  .firestore.document("comments/{id}")
   .onCreate((snapshot) => {
     return db
       .doc(`/screams/${snapshot.data().screamId}`)
@@ -88,9 +88,9 @@ exports.createNotificationOnComment = functions
             createdAt: new Date().toISOString(),
             recipient: doc.data().userHandle,
             sender: snapshot.data().userHandle,
-            type: 'comment',
+            type: "comment",
             read: false,
-            screamId: doc.id
+            screamId: doc.id,
           });
         }
       })
